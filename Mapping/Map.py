@@ -1,8 +1,11 @@
 import cozmo
 import time
-from PIL import Image, ImageColor
+from PIL import Image, ImageColor, ImageTk
 from cozmo.util import degrees, Pose, distance_mm, speed_mmps
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes
+import matplotlib.pyplot as plt
+import matplotlib.image as img
+import tkinter as tk
 
 """
 Things to do:
@@ -15,25 +18,31 @@ with them trailing over the map
 work out how big the picture is, what is an 
 
 """
+# create a tkinter base window and canvas we can draw our map on.
+root = tk.Tk()
+canvas = tk.Canvas(root, width=500, height=500)
+canvas.pack()
+
 # create blank map
-game_map = Image.new('L', (1000, 1000))
+game_map = Image.new('RGB', (500, 500), color=(0, 0, 0))
 
 # get cube images for map and resize to approximately the right size
 cube_image = Image.open("cube.jpg")
-cube_image.thumbnail((45, 45))
+cube_image.thumbnail((20, 20))
 cozmo_image = Image.open("cozmo.jpg")
-cozmo_image.thumbnail((50, 50))
+cozmo_image.thumbnail((20, 20))
 
 # define poses for cozmo and two cubes
 cozmo_pose = []
 cube_poses = []
 
+
 # the array holding the commands the player has given
 commands = []
 
 
-#define the max time
-max_time = 5
+# define the max time
+max_time = 1
 
 
 # add event listeners for each custom object, when event happens the listener calls the method to add it to the array
@@ -182,28 +191,30 @@ def put_down_cube(robot):
 # update the displayed map
 def update_map():
     """This paints the map white and then pastes the positions of cozmo and the cubes in their updated positions."""
-    for x in range(0, 1000):
-        for y in range(0, 1000):
-            game_map.putpixel((x, y), 255)
+    for x in range(0, 500):
+        for y in range(0, 500):
+            game_map.putpixel((x, y), (255, 255, 255))
     for val in cube_poses:
         draw_cubes_on_map(val[0], val[1])
     for val in cozmo_pose:
         draw_cozmo_on_map(val[0], val[1])
-    game_map.show()
+    this_map = ImageTk.PhotoImage(game_map)
+    canvas.create_image(20, 20, image=this_map)
+    root.update()
 
 
 def draw_cubes_on_map(x, y):
     """ Take in an x and y value, normalise it to our map so that the origin is always the center and then draw an image
     of a cube there."""
-    x = int(x) + 500
-    y = int(y) + 500
+    x = int(x) + 250
+    y = int(y) + 250
     game_map.paste(cube_image, (x, y))
 
 
 def draw_cozmo_on_map(x, y):
     """Same as above, except draw a cozmo"""
-    x = int(x) + 500
-    y = int(y) + 500
+    x = int(x) + 250
+    y = int(y) + 250
     game_map.paste(cozmo_image, (x, y))
 
 
@@ -232,6 +243,7 @@ def get_cozmo_position(robot):
 
 
 def cozmo_program(robot: cozmo.robot.Robot):
+    update_map()
     robot.add_event_handler(cozmo.objects.EvtObjectAppeared, event_listeners)
     make_command_cards(robot)
     game_state[0] = 'Building Map'
@@ -245,11 +257,14 @@ def cozmo_program(robot: cozmo.robot.Robot):
         cube_poses.append(this_cube)
     print(cube_poses)
     update_map()
-    game_map.show()
     print(commands)
+    update_map()
     for a in range(0, max_time):
         time.sleep(1)
     carry_out_commands(robot)
-
+    drive_forward(robot)
+    for a in range(0, max_time):
+        time.sleep(1)
+    root.mainloop()
 
 cozmo.run_program(cozmo_program)
