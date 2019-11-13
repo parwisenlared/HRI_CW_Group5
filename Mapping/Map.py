@@ -1,6 +1,8 @@
 import cozmo
+import time
 from PIL import Image, ImageColor
 from cozmo.util import degrees, Pose, distance_mm, speed_mmps
+from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes
 
 """
 Things to do:
@@ -29,16 +31,69 @@ cube_poses = []
 # the array holding the commands the player has given
 commands = []
 
-# define command cards (THIS HAS TO CHANGE TO CUSTOM OBJECTS)
-forward_card = 'forward'
-turn_left = 'left'
-turn_right = 'right'
-reverse = 'reverse'
-pick_up = 'pick_up'
-put_down = 'put_down'
-undo = 'undo'
-reset = 'reset'
-execution_card = 'execute'
+
+#define the max time
+max_time = 5
+
+
+# add event listeners for each custom object, when event happens the listener calls the method to add it to the array
+def event_listeners( evt, **kw):
+    if isinstance(evt.obj, CustomObject):
+        obj = str(evt.obj.object_type)
+        print(obj)
+        obj_substring = obj[-2:]
+        print(obj_substring)
+        object_number = int(obj_substring)
+        if object_number == 0:
+            add_command_to_array(0)
+            print("Seen: 0")
+        elif object_number == 1:
+            add_command_to_array(1)
+            print("Seen: 1")
+        elif object_number == 2:
+            add_command_to_array(2)
+            print("Seen: 2")
+        elif object_number == 3:
+            add_command_to_array(3)
+            print("Seen: 1")
+        elif object_number == 4:
+            add_command_to_array(4)
+            print("Seen: 1")
+        elif object_number == 5:
+            add_command_to_array(5)
+            print("Seen: 1")
+        elif object_number == 6:
+            add_command_to_array(6)
+            print("Seen: 1")
+        elif object_number == 7:
+            add_command_to_array(7)
+            print("Seen: 1")
+        elif object_number == 8:
+            add_command_to_array(8)
+            print("Seen: 1")
+
+
+# define command cards
+def make_command_cards(robot):
+    forward_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType00, CustomObjectMarkers.Diamonds2, 44, 10,
+                                                  10, True)
+    turn_left = robot.world.define_custom_cube(CustomObjectTypes.CustomType01, CustomObjectMarkers.Triangles4, 44, 10,
+                                               10, True)
+    turn_right = robot.world.define_custom_cube(CustomObjectTypes.CustomType02, CustomObjectMarkers.Hexagons5, 44, 10,
+                                                10, True)
+    reverse = robot.world.define_custom_cube(CustomObjectTypes.CustomType03, CustomObjectMarkers.Hexagons2, 44, 10,
+                                             10, True)
+    pick_up = robot.world.define_custom_cube(CustomObjectTypes.CustomType04, CustomObjectMarkers.Diamonds3, 44, 10,
+                                             10, True)
+    put_down = robot.world.define_custom_cube(CustomObjectTypes.CustomType05, CustomObjectMarkers.Hexagons4, 44, 10,
+                                              10, True)
+    undo = robot.world.define_custom_cube(CustomObjectTypes.CustomType06, CustomObjectMarkers.Circles3, 44, 10,
+                                          10, True)
+    reset = robot.world.define_custom_cube(CustomObjectTypes.CustomType07, CustomObjectMarkers.Circles4, 44, 10,
+                                           10, True)
+    execution_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType08, CustomObjectMarkers.Triangles3, 44,
+                                                    10, 10, True)
+    return forward_card, turn_right, turn_left, reverse, pick_up, put_down, undo, reset, execution_card
 
 
 # variable to track current state of game should be Building Map, Receiving Instructions, Resetting Map, Lost, Won
@@ -46,25 +101,26 @@ game_state = ['horray']
 
 
 # Adds commands to command array in the form of numbers which are then read out below
-def add_command_to_array(command_card, robot):
-    if command_card == execution_card:
-        carry_out_commands(robot)
-    elif command_card == reset:
+def add_command_to_array(command_card):
+    if command_card == 8:
+        DONOTHING = 0 # right now this statement has no effect. When we implement the FSM it will have to change the
+        # state to going
+    elif command_card == 7:
         for val in commands:
             commands.pop()
-    elif command_card == undo:
+    elif command_card == 6:
         commands.pop()
-    elif command_card == forward_card:
+    elif command_card == 0:
         commands.append(1)
-    elif command_card == turn_left:
+    elif command_card == 1:
         commands.append(2)
-    elif command_card == turn_right:
+    elif command_card == 2:
         commands.append(3)
-    elif command_card == reverse:
+    elif command_card == 3:
         commands.append(4)
-    elif command_card == pick_up:
+    elif command_card == 4:
         commands.append(5)
-    elif command_card == put_down:
+    elif command_card == 5:
         commands.append(6)
 
 
@@ -87,7 +143,7 @@ def carry_out_commands(robot):
 
 # method to be called when card reading @move forward is shown
 def drive_forward(robot):
-    robot.drive_straight(distance_mm(50), speed_mmps(50)).wait_for_completed()
+    robot.drive_straight(distance_mm(150), speed_mmps(50)).wait_for_completed()
     get_cozmo_position(robot)
     update_map()
 
@@ -101,7 +157,7 @@ def drive_backwards(robot):
 
 # method to be called when card reading turn left OR right is shown, when called must include angle = 90, -90
 def turn(angle, robot):
-    cozmo.robot.Robot.turn_in_place(degrees(angle)).wait_for_completed()
+    robot.turn_in_place(degrees(angle)).wait_for_completed()
     get_cozmo_position(robot)
     update_map()
 
@@ -176,6 +232,8 @@ def get_cozmo_position(robot):
 
 
 def cozmo_program(robot: cozmo.robot.Robot):
+    robot.add_event_handler(cozmo.objects.EvtObjectAppeared, event_listeners)
+    make_command_cards(robot)
     game_state[0] = 'Building Map'
     get_cozmo_position(robot)
     update_map()
@@ -188,11 +246,10 @@ def cozmo_program(robot: cozmo.robot.Robot):
     print(cube_poses)
     update_map()
     game_map.show()
-    add_command_to_array(forward_card, robot)
-    add_command_to_array(pick_up, robot)
-    add_command_to_array(put_down, robot)
-    add_command_to_array(reverse, robot)
-    add_command_to_array(execution_card, robot)
+    print(commands)
+    for a in range(0, max_time):
+        time.sleep(1)
+    carry_out_commands(robot)
 
 
 cozmo.run_program(cozmo_program)
