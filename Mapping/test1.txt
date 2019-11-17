@@ -1,0 +1,21 @@
+Cozmo ('Cozmo found a face at: %s', '<Pose <Position x: 384.38 y: 136.22 z: 551.74> <Quaternion q0: 0.83 q1: 0.30 q2: -0.16 q3: -0.44 (angle_z: <Angle -0.98 radians (-56.01 degrees)>)> origin_id=7>') at : 20:41:09.704124.
+Cozmo was at (5.51, -139.57) at : 20:41:22.663367.
+cube one was at (-74.57, 127.46)
+cube two was at (-156.43, 70.69)
+Cozmo was at (5.51, -139.57) at : 20:41:37.688728.
+cube one was at (-74.57, 127.46)
+cube two was at (-156.43, 70.69)
+Cozmo was at (-24.19, -135.97) at : 20:41:39.435029.
+cube one was at (-76.58, 74.25)
+cube two was at (-151.55, 6.27)
+Cozmo was at (-19.67, -132.15) at : 20:41:50.684283.
+cube one was at (-77.35, 73.32)
+cube two was at (-151.64, 6.35)
+Cozmo moved forward at : 20:41:52.382919.
+Cozmo was at (-92.69, 0.8) at : 20:41:56.820027.
+cube one was at (-77.36, 73.24)
+cube two was at (-151.66, 6.32)
+Cozmo moved backwards at : 20:41:58.462522.
+Cozmo was at (-18.21, -131.27) at : 20:42:03.469074.
+cube one was at (-77.36, 73.24)
+cube two was at (-151.66, 6.32)
