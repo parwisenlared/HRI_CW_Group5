@@ -12,7 +12,7 @@ import asyncio
 import threading
 
 """
-
+-------------YO YO YO, MAKE SURE IN THE FSM make_game_ready is only called ONCE-----------------------------------------
 create definition to find initial poses and start map
 
 """
@@ -317,7 +317,7 @@ def face_observed_listeners(evt, **kw):
 
 # this initial method looks for the game player. Cozmo will look for a face and assume the one it sees is the player
 def find_player(robot):
-    robot.say_text("If you are not playing please cover your face while I look for the player.").wait_for_completed()
+    #robot.say_text("If you are not playing please cover your face while I look for the player.").wait_for_completed()
     robot.move_lift(-3)
     robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
     player_face = None
@@ -340,7 +340,7 @@ def find_player(robot):
         # returns the player's face for use later in the program
         if not (player_face and player_face.is_visible):
             try:
-                robot.turn_in_place(degrees(90)).wait_for_completed()
+                robot.turn_in_place(degrees(360)).wait_for_completed()
                 player_face = robot.world.wait_for_observed_face(timeout=1)
             except asyncio.TimeoutError:
                 event = "didn't find a face looking elsewhere!"
@@ -360,25 +360,99 @@ def get_player_position():
         abd = 1
 
 
-# this thread contains all of the running of cozmo and the log. Currently just tests and does not implement the game
-def cozmo_thread(robot):
-    player_face = find_player(robot)
-    turn(90, robot)
-    drive_backwards(robot)
-    look_at_player(robot, player_face)
-    robot.add_event_handler(cozmo.world.faces.EvtFaceObserved, face_observed_listeners)
-    # this creates a custom name for each log fike
+# this creates a custom name for each log fike
+def make_log_file():
     name = input("Please enter a filename for the log file (don't add a file extension thx): ")
     file_name_with_extension = name + ".txt"
     logfile = open(file_name_with_extension, "w+")
+    return logfile
 
-    # get the inital map of the game, where is cozmo
+
+# should only ever be called once to get initial game board (in case reset is needed), set up listeners, make the
+# command cards, set the cube colours
+def make_game_ready(robot):
+    robot.add_event_handler(cozmo.world.faces.EvtFaceObserved, face_observed_listeners)
+    robot.add_event_handler(cozmo.objects.EvtObjectAppeared, object_event_listeners)
+    make_command_cards(robot)
+    cube1, cube2 = colour_light_cubes(robot)
+    cozmo_current_pose = str(robot.pose.position)
+    cozmo_xy = get_xy_coordinates(cozmo_current_pose)
+    cozmo_pose.append(cozmo_xy)
+    for val in cozmo_pose:
+        cozmo_initial_pose.append(val)
+        print(str(val))
+    find_cubes(robot)
+    for val in cube_one_pose:
+        cube_one_initial_pose.append(val)
+    for val in cube_two_pose:
+        cube_two_initial_pose.append(val)
+    print(str(cozmo_initial_pose))
+    print(str(cube_one_initial_pose))
+    print(str(cube_two_initial_pose))
+
+
+def find_cubes(robot):
+    look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+    cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=cozmo.objects.LightCube, timeout=60)
+    look_around.stop()
     update_map(robot)
 
-    # create event handlers for seeing custom objects
-    robot.add_event_handler(cozmo.objects.EvtObjectAppeared, object_event_listeners)
-    # set up customer makers for commands
-    make_command_cards(robot)
+
+# checks if cubes/cozmo are out of position and repositions them correctly
+def reset_game_board(robot):
+    find_cubes(robot)
+    x_current = 0
+    x_initial = 0
+    y_current = 0
+    x_initial = 0
+    cube = robot.world.get_light_cube(1)
+    for val in cube_one_pose:
+        x_current = val[0]
+        y_current = val[1]
+    for val in cube_one_initial_pose:
+        x_initial = val[0]
+        y_initial = val[1]
+    if x_current != x_initial or y_current != y_initial:
+        pick_up_cube(robot, cube)
+        robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
+        put_down_cube(robot)
+        drive_backwards(robot)
+    x_current = 0
+    x_initial = 0
+    y_current = 0
+    x_initial = 0
+    cube = robot.world.get_light_cube(2)
+    for val in cube_one_pose:
+        x_current = val[0]
+        y_current = val[1]
+    for val in cube_one_initial_pose:
+        x_initial = val[0]
+        y_initial = val[1]
+    if x_current != x_initial or y_current != y_initial:
+        pick_up_cube(robot, cube)
+        robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
+        put_down_cube(robot)
+        drive_backwards(robot)
+    x = 0
+    y = 0
+    for val in cozmo_initial_pose:
+        x = val[0]
+        y = val[1]
+    robot.go_to_pose(Pose(x, y, 0, angle_z=degrees(0))).wait_for_completed()
+
+
+# this thread contains all of the running of cozmo and the log. Currently just tests and does not implement the game
+def cozmo_thread(robot):
+    make_game_ready(robot)
+    logfile = make_log_file()
+#    player_face = find_player(robot)
+#    turn(90, robot)
+    drive_backwards(robot)
+    update_map(robot)
+    reset_game_board(robot)
+    return
+    look_at_player(robot, player_face)
+
 
     # set up lightcubes for use
     cube1, cube2 = colour_light_cubes(robot)
@@ -388,11 +462,6 @@ def cozmo_thread(robot):
     game_state[0] = 'Building Map'
 
     # this is mostly just insanity checking atm
-    update_map(robot)
-    look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-    cubes = robot.world.wait_until_observe_num_objects(num=2, object_type=cozmo.objects.LightCube, timeout=60)
-    look_around.stop()
-    update_map(robot)
     print(commands)
     update_map(robot)
     for a in range(0, max_time):
