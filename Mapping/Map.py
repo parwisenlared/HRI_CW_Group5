@@ -167,6 +167,7 @@ def add_command_to_array(command_card):
     elif command_card == 5:
         commands.append(6)
 
+    # Lorenzo and Odhran suggest you sould use a switch case instead of all the elif :o
 
 # reads each command value from the commands list and executes the correct action
 def carry_out_commands(robot):
