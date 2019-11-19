@@ -1,6 +1,16 @@
-from random import randint
-from time import clock
 import Map
+import cozmo
+import time
+import datetime
+from PIL import Image, ImageColor, ImageTk
+from cozmo.util import degrees, Pose, distance_mm, speed_mmps
+from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes, LightCube1Id, LightCube2Id, LightCube3Id
+from cozmo.faces import Face
+import matplotlib.pyplot as plt
+import matplotlib.image as img
+import tkinter as tk
+import asyncio
+import threading
 
 ## ================================================
 
@@ -30,13 +40,18 @@ class State1(State):
         super(State1,self).Enter()
     
     def Execute(self):
-        print("Cozmo explains game")
+        print("Cozmo looks for person and explains game")
+        # Cozmo explains game: make him talk?
+        self.FSM.ToTransition("toState2")
+
+        """
         if (trigger transition):
             if not
                 self.FSM.ToTransition("toState2")
             else:
                 self.FSM.ToTransition("toState2")
-    
+        """
+
     def Exit(self):
         print("Exiting State1")
 
@@ -50,14 +65,17 @@ class State2(State):
     
     def Execute(self):
         print("Player shows a sequence of Control Cards to Cozmo")
-        
+        Map.look_at_player
+        # look at this for two min. And then say: "You're time is over"
+        self.FSM.ToTransition("toState3")
 
+        """
         if (trigger transition):
             if not
                 self.FSM.ToTransition("toState3")
             else:
                 self.FSM.ToTransition("toState3")
-    
+        """
     def Exit(self):
         print("Exiting State2")
         
@@ -73,11 +91,15 @@ class State3(State):
     
     def Execute(self):
         print("The player shows the Execution Card")
-        if (trigger transition):
+        # Robot says: show me the execution card (here?)
+        """
+        if (Map.lo):
             if not
-                self.FSM.ToTransition("toState4")
+                print("Show me the Execution card again")
+                self.FSM.ToTransition("toState3")
             else:
                 self.FSM.ToTransition("toState4")
+        """
     
     def Exit(self):
         print("Exiting State3")
@@ -93,11 +115,8 @@ class State4(State):
     
     def Execute(self):
         print("Cozmo executes the sequence of actions of State2")
-        if (trigger transition):
-            if not
-                self.FSM.ToTransition("toState5")
-            else:
-                self.FSM.ToTransition("toState4")
+        Map.carry_out_commands(robot)
+        self.FSM.ToTransition("toState4")
     
     def Exit(self):
         print("Exiting State4")
@@ -114,31 +133,33 @@ class State5(State):
     
     def Execute(self):
         print("Cozmo checks if the goal has been achieved")
-        if (trigger transition):
+        """
+        if (Map.light_cube_visible(robot) = false):
             if not
-                self.FSM.ToTransition("toState5")
+                # Cozmo says: "Congratulations Human"
+                Map.reset_game_board()
+                self.FSM.ToTransition("toSleep")
             else:
-                self.FSM.ToTransition("toState4")
-    
+                # Cozmo says: "You failed. Start again, looser"
+                Map.reset_game_board()
+                self.FSM.ToTransition("toState1")
+        """
     def Exit(self):
         print("Exiting State5")
 
-class State6(State):
+class Sleep(State):
 
     def __init__(self,FSM):
-        super(State6, self).__init__(FSM)
+        super(Sleep, self).__init__(FSM)
 
     def Enter(self):
         print("Preparing State6")
-        super(State6,self).Enter()
+        super(Sleep,self).Enter()
     
     def Execute(self):
-        print("End of the game")
-        if (trigger transition):
-            if not
-                self.FSM.ToTransition("toState1")
-            else:
-                self.FSM.ToTransition("toState6")
+        print("End of the game. Winner")
+        # Cozmo says: Sleeping now.
+        # Terminate Cozmo.
     
     def Exit(self):
         print("Exiting State6")
@@ -189,7 +210,7 @@ class FSM(object):
 
 # IMPLEMENTATION
 
-Char = type("Char"),(object,),{})
+Char = type(("Char"),(object,),{})
 
 class CozmoGame(Char):
     def __init__(self):
@@ -223,9 +244,13 @@ class CozmoGame(Char):
 
 if __name__ == "__main__":
     
+    Map.make_game_ready()
+    logfile = Map.make_log_file()
+
+    cozmo.run_program(cozmo_program)
     g = CozmoGame()
     g.Execute()
-
+    
 
 
 
