@@ -247,7 +247,7 @@ if __name__ == "__main__":
     Map.make_game_ready()
     logfile = Map.make_log_file()
 
-    cozmo.run_program(cozmo_program)
+    cozmo.run_program(Map.cozmo_program)
     g = CozmoGame()
     g.Execute()
     
