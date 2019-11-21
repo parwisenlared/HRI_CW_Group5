@@ -1,7 +1,7 @@
 import cozmo
 import time
 import datetime
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageDraw
 from cozmo.util import degrees, Pose, distance_mm, speed_mmps
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes, LightCube1Id, LightCube2Id, LightCube3Id
 from cozmo.faces import Face
@@ -44,7 +44,7 @@ cozmo_initial_pose = []
 cozmo_pose = []
 cube_one_pose = []
 cube_two_pose = []
-moved1 = [0]
+
 # create an empty log where we will write to during the program
 log = []
 
@@ -60,7 +60,7 @@ player_face_pose = []
 
 # variable to track current state of game should be Building Map, Receiving Instructions, Resetting Map, Lost, Won
 game_state = ['waiting']
-
+image_number = 0
 
 # how to change states
 def change_state(state):
@@ -72,10 +72,10 @@ def change_state(state):
 def state_thread(robot):
     global game_running
     set_up = 0
-    tries = 1
+    tries = 0
     current_time = 0
+    robot.say_text("I'm looking for the player, please get in front of my camera!")
     player_faces = find_player(robot)
-    look_at = 0
     while game_running:
         while game_state[0] == "waiting":
             print("hello")
@@ -84,29 +84,35 @@ def state_thread(robot):
             # ensure the make_game_ready method is only called at the beginning of the game.
             if set_up == 0:
                 set_up = set_up + 1
+                robot.say_text("I'm just setting up!")
                 make_game_ready(robot)
         while game_state[0] == "listening_for_commands":
-            if look_at == 0:
-                look_at_player(robot, player_faces)
-                look_at = look_at + 1
-            time.sleep(0.1)
+            robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
+                           "disappears from my view so if you want to show me one twice you need to hide it and then "
+                           "show it again")
+            look_at_player(robot, player_faces)
             if current_time <= max_time:
                 time.sleep(0.1)
                 current_time = current_time + 1
             else:
-                look_at = 0
                 current_time = 0
                 change_state("executing")
                 time.sleep(0.1)
         while game_state[0] == "executing":
+            robot.say_text("Ok, I'm getting started")
             robot.set_head_angle(degrees(0)).wait_for_completed()
             carry_out_commands(robot)
             time.sleep(0.1)
         while game_state[0] == "failed":
+            robot.say_text("That didn't work!")
             tries = tries + 1
+            left = 3 - tries
+            robot.say_text("You have ", left, " tries left")
             if tries == 3:
                 lost(robot)
             else:
+                robot.say_text("I'm just going to get back in position, can you put the cubes back in the right "
+                               "place please?")
                 reset_game_board(robot)
         while game_state[0] == "success":
             victory(robot)
@@ -151,30 +157,39 @@ def object_event_listeners(evt, **kw):
         if object_number == 0:
             add_command_to_array(0)
             write_to_log("Saw card 0")
+            print("card: 0 seen")
         elif object_number == 1:
             add_command_to_array(1)
             write_to_log("Saw card 1")
+            print("card: 1 seen")
         elif object_number == 2:
             add_command_to_array(2)
             write_to_log("Saw card 2")
+            print("card: 2 seen")
         elif object_number == 3:
             add_command_to_array(3)
             write_to_log("Saw card 3")
+            print("card: 3 seen")
         elif object_number == 4:
             add_command_to_array(4)
             write_to_log("Saw card 4")
+            print("card: 4 seen")
         elif object_number == 5:
             add_command_to_array(5)
             write_to_log("Saw card 5")
+            print("card: 5 seen")
         elif object_number == 6:
             add_command_to_array(6)
             write_to_log("Saw card 6")
+            print("card: 6 seen")
         elif object_number == 7:
             add_command_to_array(7)
             write_to_log("Saw card 7")
+            print("card: 7 seen")
         elif object_number == 8:
             add_command_to_array(8)
             write_to_log("Saw card 8")
+            print("card: 8 seen")
 
 
 # This creates each of the custom objects using the factory objects.
@@ -223,8 +238,6 @@ def add_command_to_array(command_card):
         commands.append(5)
     elif command_card == 5:
         commands.append(6)
-
-    # Lorenzo and Odhran suggest you sould use a switch case instead of all the elif :o
 
 
 # reads each command value from the commands list and executes the correct action
@@ -315,9 +328,6 @@ def light_cube_visible(robot):
 
 # cozmo will pick up the cube seen in light_cube_visible
 def pick_up_cube(robot, cube):
-    #robot.dock_with_cube(cube).wait_for_completed()
-    #robot.move_lift(2)
-#    robot.pickup_object(cube, num_retries=2).wait_for_completed()
     robot.stop_all_motors()
     current_action = robot.pickup_object(cube, num_retries=3, in_parallel=True)
     current_action.wait_for_completed()
@@ -326,7 +336,6 @@ def pick_up_cube(robot, cube):
         result = current_action.result
         print("Pickup Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
         return
-    moved1.insert(0, 1)
 
 
 # cozmo will put a cube down
@@ -338,6 +347,7 @@ def put_down_cube(robot):
 
 # update the displayed map
 def update_map(robot):
+    global image_number
     print("Updated map")
     # ensures all pictures pasted on the map are in the correct current poses
     get_world_positions(robot)
@@ -357,6 +367,11 @@ def update_map(robot):
     this_map = ImageTk.PhotoImage(game_map)
     canvas.delete(tk.ALL)
     canvas.create_image(anchor_for_canvas, anchor_for_canvas, image=this_map)
+    image1 = Image.new("RGB", (size_of_map, size_of_map), 0)
+    image1.paste(this_map)
+    image_number = image_number + 1
+    filename = "mapNumber", str(image_number)
+    image1.save(filename)
     root.update()
 
 
@@ -513,18 +528,6 @@ def reset_game_board(robot):
     robot.move_lift(-5)
     drive_backwards(robot)
     print("Resetting")
-    if moved1[0] == 1:
-        moved1.insert(0, 0)
-        look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-        cubes = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube, timeout=60)
-        look_around.stop()
-        for val in cube_one_initial_pose:
-            x_initial = val[0]
-            y_initial = val[1]
-            for cube in cubes:
-                pick_up_cube(robot, cube)
-            robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
-            put_down_cube(robot)
     x = 0
     y = 0
     for val in cozmo_initial_pose:
