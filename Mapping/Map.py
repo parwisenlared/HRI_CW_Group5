@@ -1,12 +1,11 @@
 import cozmo
 import time
 import datetime
-from PIL import Image, ImageColor, ImageTk
+from PIL import Image, ImageTk
 from cozmo.util import degrees, Pose, distance_mm, speed_mmps
 from cozmo.objects import CustomObject, CustomObjectMarkers, CustomObjectTypes, LightCube1Id, LightCube2Id, LightCube3Id
 from cozmo.faces import Face
-import matplotlib.pyplot as plt
-import matplotlib.image as img
+
 import tkinter as tk
 import asyncio
 import threading
@@ -17,7 +16,7 @@ create definition to find initial poses and start map
 
 """
 
-
+game_running = True
 # variables for setting up the tkinter map
 size_of_map = 1000
 anchor_for_canvas = size_of_map/2
@@ -45,7 +44,7 @@ cozmo_initial_pose = []
 cozmo_pose = []
 cube_one_pose = []
 cube_two_pose = []
-
+moved1 = [0]
 # create an empty log where we will write to during the program
 log = []
 
@@ -53,7 +52,7 @@ log = []
 commands = []
 
 # define the max time
-max_time = 50
+max_time = 250
 
 # variable holding the player's face_ID and pose
 player_face_id = []
@@ -66,15 +65,17 @@ game_state = ['waiting']
 # how to change states
 def change_state(state):
     game_state.insert(0, str(state))
+    write_to_log("Changed to state: %s" % state)
 
 
 # all the states that can exist
 def state_thread(robot):
+    global game_running
     set_up = 0
-    tries = 0
+    tries = 1
     current_time = 0
-    game_running = True
-    player_face = find_player(robot)
+    player_faces = find_player(robot)
+    look_at = 0
     while game_running:
         while game_state[0] == "waiting":
             print("hello")
@@ -85,19 +86,20 @@ def state_thread(robot):
                 set_up = set_up + 1
                 make_game_ready(robot)
         while game_state[0] == "listening_for_commands":
-            look_at = 0
             if look_at == 0:
-                look_at_player(robot, player_face)
-                look_at = 1
+                look_at_player(robot, player_faces)
+                look_at = look_at + 1
             time.sleep(0.1)
             if current_time <= max_time:
-                time.sleep(0.5)
+                time.sleep(0.1)
                 current_time = current_time + 1
             else:
+                look_at = 0
                 current_time = 0
                 change_state("executing")
                 time.sleep(0.1)
         while game_state[0] == "executing":
+            robot.set_head_angle(degrees(0)).wait_for_completed()
             carry_out_commands(robot)
             time.sleep(0.1)
         while game_state[0] == "failed":
@@ -108,8 +110,12 @@ def state_thread(robot):
                 reset_game_board(robot)
         while game_state[0] == "success":
             victory(robot)
-        while game_state[0] == "game_over":
+        if game_state[0] == "game_over":
             game_running = False
+            logfile = make_log_file()
+            for val in log:
+                logfile.write(val)
+            logfile.close()
 
 
 # colour light cubes and return those cubes to the main function for further use.
@@ -118,6 +124,7 @@ def colour_light_cubes(robot):
     cube1.set_lights(cozmo.lights.red_light)
     cube2 = robot.world.get_light_cube(LightCube2Id)
     cube2.set_lights(cozmo.lights.blue_light)
+    write_to_log("Light cubes turn on")
     return cube1, cube2
 
 
@@ -130,15 +137,8 @@ def get_time():
 # write events to log (list) to be read and written to log file at the end of the program
 def write_to_log(event):
     this_time = get_time()
-    if 'cube one' in event:
-        this_string = str(event)
-        log.append(this_string)
-    elif 'cube two' in event:
-        this_string = str(event)
-        log.append(this_string)
-    else:
-        string = 'Cozmo %s at : %s.\n' % (event, this_time)
-        log.append(string)
+    string = '%s at : %s.\n' % (event, this_time)
+    log.append(string)
 
 
 # Add event listeners for each custom object, when object is seen, the listener calls the method to add it to the
@@ -150,22 +150,31 @@ def object_event_listeners(evt, **kw):
         object_number = int(obj_substring)
         if object_number == 0:
             add_command_to_array(0)
+            write_to_log("Saw card 0")
         elif object_number == 1:
             add_command_to_array(1)
+            write_to_log("Saw card 1")
         elif object_number == 2:
             add_command_to_array(2)
+            write_to_log("Saw card 2")
         elif object_number == 3:
             add_command_to_array(3)
+            write_to_log("Saw card 3")
         elif object_number == 4:
             add_command_to_array(4)
+            write_to_log("Saw card 4")
         elif object_number == 5:
             add_command_to_array(5)
+            write_to_log("Saw card 5")
         elif object_number == 6:
             add_command_to_array(6)
+            write_to_log("Saw card 6")
         elif object_number == 7:
             add_command_to_array(7)
+            write_to_log("Saw card 7")
         elif object_number == 8:
             add_command_to_array(8)
+            write_to_log("Saw card 8")
 
 
 # This creates each of the custom objects using the factory objects.
@@ -221,49 +230,51 @@ def add_command_to_array(command_card):
 # reads each command value from the commands list and executes the correct action
 def carry_out_commands(robot):
     print("Carrying out commands")
+    print(str(commands))
     for val in commands:
         if val == 1:
             drive_forward(robot)
         elif val == 2:
-            turn(-90, robot)
-        elif val == 3:
             turn(90, robot)
+            write_to_log("Turned left")
+        elif val == 3:
+            turn(-90, robot)
+            write_to_log("Turned right")
         elif val == 4:
             drive_backwards(robot)
         elif val == 5:
             # This should be 'pick_up_cube,' however this is automatically called by light_cube_visible if the player
             # has correctly guided cozmo to the cube.
             light_cube_visible(robot)
+            write_to_log("Attempted cube pick up")
         elif val == 6:
             put_down_cube(robot)
+            write_to_log("Put cube down")
+    for x in range(0, len(commands)):
+        commands.pop()
     check_for_success()
 
 
 def check_for_success():
-    print("Checking for success")
-    x1 = 0
-    y1 = 0
-    x2 = 1
-    y2 = 1
-    for val in cube_one_pose:
-        x1 = val[0]
-        y1 = val[1]
-    for val in cube_two_pose:
-        x2 = val[0]
-        y2 = val[1]
-    if x1 == x2 and y1 == y2:
+    write_to_log("Checking for success")
+    condition = input("Did they succeed? Y?N")
+    if condition == "Y":
+        write_to_log("Success")
         change_state("success")
     else:
+        write_to_log("Failed")
         change_state("failed")
 
 
 def lost(robot):
+    write_to_log("Player lost entirely")
     print("You lost")
     robot.say_text("you lost! goodbye").wait_for_completed()
     change_state("game_over")
 
 
 def victory(robot):
+    write_to_log("PLayer won")
     print("You won")
     robot.say_text("you won! goodbye").wait_for_completed()
     change_state("game_over")
@@ -287,10 +298,6 @@ def drive_backwards(robot):
 def turn(angle, robot):
     robot.turn_in_place(degrees(angle)).wait_for_completed()
     update_map(robot)
-    if angle == 90:
-        write_to_log('turned right')
-    if angle == -90:
-        write_to_log('turned left')
 
 
 # method to discover if the player has positioned cozmo where it can see a cube - it will then pick it up or change the
@@ -308,9 +315,18 @@ def light_cube_visible(robot):
 
 # cozmo will pick up the cube seen in light_cube_visible
 def pick_up_cube(robot, cube):
-    robot.pickup_object(cube, num_retries=2).wait_for_completed()
-    update_map(robot)
-    write_to_log('picked up cube')
+    #robot.dock_with_cube(cube).wait_for_completed()
+    #robot.move_lift(2)
+#    robot.pickup_object(cube, num_retries=2).wait_for_completed()
+    robot.stop_all_motors()
+    current_action = robot.pickup_object(cube, num_retries=3, in_parallel=True)
+    current_action.wait_for_completed()
+    if current_action.has_failed:
+        code, reason = current_action.failure_reason
+        result = current_action.result
+        print("Pickup Cube failed: code=%s reason='%s' result=%s" % (code, reason, result))
+        return
+    moved1.insert(0, 1)
 
 
 # cozmo will put a cube down
@@ -318,7 +334,6 @@ def put_down_cube(robot):
     robot.move_lift(-1)
     drive_backwards(robot)
     update_map(robot)
-    write_to_log('put down cube')
 
 
 # update the displayed map
@@ -366,7 +381,7 @@ def get_world_positions(robot):
         for val in cozmo_pose:
             x = val[0]
             y = val[1]
-            event = 'was at (%s, %s)' % (x, y)
+            event = 'cozmo was at (%s, %s)' % (x, y)
             write_to_log(event)
         cozmo_pose.pop()
     if len(cube_one_pose) > 0:
@@ -436,8 +451,17 @@ def find_player(robot):
 
 # cozmo will turn and look at where it last saw the player
 def look_at_player(robot, player_face):
+    robot.stop_all_motors()
+    print(str(player_face))
     print("Looking at players")
-    robot.turn_towards_face(player_face).wait_for_completed()
+    robot.stop_all_motors()
+    current_action = robot.turn_towards_face(face=player_face)
+    current_action.wait_for_completed()
+    if current_action.has_failed:
+        code, reason = current_action.failure_reason
+        result = current_action.result
+        print("look at failed: code=%s reason='%s' result=%s" % (code, reason, result))
+        return
 
 
 # does nothing currently but will be updated to update the player position
@@ -458,6 +482,7 @@ def make_log_file():
 # command cards, set the cube colours
 def make_game_ready(robot):
     print("Setting up")
+    write_to_log("Setting up game board")
     robot.add_event_handler(cozmo.world.faces.EvtFaceObserved, face_observed_listeners)
     robot.add_event_handler(cozmo.objects.EvtObjectAppeared, object_event_listeners)
     make_command_cards(robot)
@@ -485,40 +510,21 @@ def find_cubes(robot):
 
 # checks if cubes/cozmo are out of position and repositions them correctly
 def reset_game_board(robot):
+    robot.move_lift(-5)
+    drive_backwards(robot)
     print("Resetting")
-    find_cubes(robot)
-    x_current = 0
-    x_initial = 0
-    y_current = 0
-    y_initial = 0
-    cube = robot.world.get_light_cube(1)
-    for val in cube_one_pose:
-        x_current = val[0]
-        y_current = val[1]
-    for val in cube_one_initial_pose:
-        x_initial = val[0]
-        y_initial = val[1]
-    if x_current != x_initial or y_current != y_initial:
-        pick_up_cube(robot, cube)
-        robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
-        put_down_cube(robot)
-        drive_backwards(robot)
-    x_current = 0
-    x_initial = 0
-    y_current = 0
-    x_initial = 0
-    cube = robot.world.get_light_cube(2)
-    for val in cube_one_pose:
-        x_current = val[0]
-        y_current = val[1]
-    for val in cube_one_initial_pose:
-        x_initial = val[0]
-        y_initial = val[1]
-    if x_current != x_initial or y_current != y_initial:
-        pick_up_cube(robot, cube)
-        robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
-        put_down_cube(robot)
-        drive_backwards(robot)
+    if moved1[0] == 1:
+        moved1.insert(0, 0)
+        look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+        cubes = robot.world.wait_until_observe_num_objects(num=1, object_type=cozmo.objects.LightCube, timeout=60)
+        look_around.stop()
+        for val in cube_one_initial_pose:
+            x_initial = val[0]
+            y_initial = val[1]
+            for cube in cubes:
+                pick_up_cube(robot, cube)
+            robot.go_to_pose(Pose((x_initial-50), (y_initial-50), 0, angle_z=degrees(0))).wait_for_completed()
+            put_down_cube(robot)
     x = 0
     y = 0
     for val in cozmo_initial_pose:
@@ -536,14 +542,10 @@ def cozmo_thread(robot):
 # this thread creates the tkinter mainloop. This is to increase the responsiveness of the window without freezing
 # the program
 def tkinter_thread():
-    root.mainloop()
-
-
-def log_making():
-    logfile = make_log_file()
-    for val in log:
-        logfile.write(val)
-    logfile.close()
+    global game_running
+    while game_running:
+        root.mainloop()
+    print("Stopped")
 
 
 # this method creates and starts running each of the threads and waits for them to finish before exiting
@@ -557,9 +559,6 @@ def cozmo_program(robot: cozmo.robot.Robot):
     c_thread.join()
     tk_thread.join()
     fsm_thread.join()
-    log_thread = threading.Thread(target=log_making())
-    log_thread.start()
-    log_thread.join()
 
 
 # this starts the program
