@@ -25,7 +25,7 @@ anchor_for_canvas = size_of_map/2
 root = tk.Tk()
 canvas = tk.Canvas(root, width=size_of_map, height=size_of_map)
 canvas.pack()
-
+look_at = 0
 # create blank map
 game_map = Image.new('RGB', (size_of_map, size_of_map), color=(0, 0, 0))
 
@@ -74,7 +74,7 @@ def state_thread(robot):
     set_up = 0
     tries = 0
     current_time = 0
-    robot.say_text("I'm looking for the player, please get in front of my camera!")
+    robot.say_text("I'm looking for the player!").wait_for_completed()
     player_faces = find_player(robot)
     while game_running:
         while game_state[0] == "waiting":
@@ -84,13 +84,16 @@ def state_thread(robot):
             # ensure the make_game_ready method is only called at the beginning of the game.
             if set_up == 0:
                 set_up = set_up + 1
-                robot.say_text("I'm just setting up!")
+                robot.say_text("I'm just setting up!").wait_for_completed()
                 make_game_ready(robot)
         while game_state[0] == "listening_for_commands":
-            robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
-                           "disappears from my view so if you want to show me one twice you need to hide it and then "
-                           "show it again")
-            look_at_player(robot, player_faces)
+            global look_at
+            #robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
+            #               "disappears from my view so if you want to show me one twice you need to hide it and then "
+            #               "show it again").wait_for_completed()N
+            if look_at == 0:
+                look_at_player(robot, player_faces)
+                look_at = look_at + 1
             if current_time <= max_time:
                 time.sleep(0.1)
                 current_time = current_time + 1
@@ -99,20 +102,20 @@ def state_thread(robot):
                 change_state("executing")
                 time.sleep(0.1)
         while game_state[0] == "executing":
-            robot.say_text("Ok, I'm getting started")
+            robot.say_text("Ok, I'm getting started").wait_for_completed()
             robot.set_head_angle(degrees(0)).wait_for_completed()
             carry_out_commands(robot)
             time.sleep(0.1)
         while game_state[0] == "failed":
-            robot.say_text("That didn't work!")
+            robot.say_text("That didn't work!").wait_for_completed()
             tries = tries + 1
             left = 3 - tries
-            robot.say_text("You have ", left, " tries left")
+            robot.say_text("You have ", left, " tries left").wait_for_completed()
             if tries == 3:
                 lost(robot)
             else:
                 robot.say_text("I'm just going to get back in position, can you put the cubes back in the right "
-                               "place please?")
+                               "place please?").wait_for_completed()
                 reset_game_board(robot)
         while game_state[0] == "success":
             victory(robot)
@@ -367,11 +370,11 @@ def update_map(robot):
     this_map = ImageTk.PhotoImage(game_map)
     canvas.delete(tk.ALL)
     canvas.create_image(anchor_for_canvas, anchor_for_canvas, image=this_map)
-    image1 = Image.new("RGB", (size_of_map, size_of_map), 0)
-    image1.paste(this_map)
-    image_number = image_number + 1
-    filename = "mapNumber", str(image_number)
-    image1.save(filename)
+    #image1 = Image.new("RGB", (size_of_map, size_of_map), 0)
+    #image1.paste(this_map)
+    #image_number = image_number + 1
+    #filename = "mapNumber", str(image_number)
+    #image1.save(filename)
     root.update()
 
 

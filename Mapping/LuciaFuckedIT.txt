@@ -1,0 +1,53 @@
+Changed to state: set_up at : 11:41:46.094305.
+didn't find a face looking elsewhere! at : 11:41:53.827653.
+('Cozmo found a face at: %s', '<Pose <Position x: 15.83 y: 591.71 z: 594.50> <Quaternion q0: 0.93 q1: 0.35 q2: 0.03 q3: 0.07 (angle_z: <Angle 0.16 radians (9.01 degrees)>)> origin_id=101>') at : 11:41:55.164363.
+Setting up game board at : 11:41:58.939590.
+Light cubes turn on at : 11:41:59.490143.
+cozmo was at (-6.17, 39.56) at : 11:42:24.752842.
+Changed to state: listening_for_commands at : 11:42:26.865523.
+Changed to state: executing at : 11:42:52.131544.
+Checking for success at : 11:42:58.897035.
+Failed at : 11:43:06.605394.
+Changed to state: failed at : 11:43:06.605394.
+cozmo was at (-22.65, 21.31) at : 11:43:32.123696.
+cube one was at (-16.69, 266.39)
+ at : 11:43:32.123696.
+cube two was at (-246.39, 29.61)
+ at : 11:43:32.123696.
+moved backwards at : 11:43:34.714429.
+Changed to state: listening_for_commands at : 11:43:39.390156.
+Changed to state: executing at : 11:44:04.609301.
+Checking for success at : 11:44:11.118703.
+Failed at : 11:44:33.681548.
+Changed to state: failed at : 11:44:33.681548.
+cozmo was at (18.46, 22.9) at : 11:44:56.133873.
+cube one was at (-16.69, 266.39)
+ at : 11:44:56.133873.
+cube two was at (-247.97, 29.58)
+ at : 11:44:56.133873.
+moved backwards at : 11:44:58.306875.
+Changed to state: listening_for_commands at : 11:45:01.337241.
+Saw card 1 at : 11:45:07.730794.
+Saw card 0 at : 11:45:12.082030.
+Saw card 4 at : 11:45:21.321518.
+Saw card 4 at : 11:45:22.161396.
+Changed to state: executing at : 11:45:26.549543.
+cozmo was at (-59.48, 40.87) at : 11:45:34.117807.
+cube one was at (-16.69, 266.39)
+ at : 11:45:34.117807.
+cube two was at (-247.97, 29.58)
+ at : 11:45:34.117807.
+Turned left at : 11:45:36.453950.
+cozmo was at (-24.87, 60.13) at : 11:45:38.896142.
+cube one was at (-16.69, 266.39)
+ at : 11:45:38.896142.
+cube two was at (-247.97, 29.58)
+ at : 11:45:38.896142.
+moved forward at : 11:45:40.868271.
+Attempted cube pick up at : 11:45:42.562433.
+Attempted cube pick up at : 11:45:58.333025.
+Checking for success at : 11:45:58.333025.
+Success at : 11:46:09.435664.
+Changed to state: success at : 11:46:09.435664.
+PLayer won at : 11:46:09.535990.
+Changed to state: game_over at : 11:46:13.214682.
