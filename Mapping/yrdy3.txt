@@ -1,0 +1,30 @@
+Changed to state: set_up at : 18:55:39.316981.
+Setting up game board at : 18:55:43.475184.
+Light cubes turn on at : 18:55:44.692292.
+didn't find a face looking elsewhere! at : 18:55:52.539957.
+didn't find a face looking elsewhere! at : 18:55:54.847058.
+didn't find a face looking elsewhere! at : 18:55:57.080612.
+('Cozmo found a face at: %s', '<Pose <Position x: -223.87 y: 294.54 z: 504.30> <Quaternion q0: 0.90 q1: 0.33 q2: 0.09 q3: 0.25 (angle_z: <Angle 0.55 radians (31.43 degrees)>)> origin_id=3>') at : 18:55:59.205547.
+cozmo was at (-29.67, 17.26) at : 18:56:02.735622.
+Changed to state: listening_for_commands at : 18:56:06.375936.
+Saw card 3 at : 18:56:20.759260.
+Saw card 3 at : 18:56:21.584010.
+Changed to state: executing at : 18:56:24.345045.
+Saw card 8 at : 18:56:24.345045.
+cozmo was at (-33.38, 14.16) at : 18:56:33.295315.
+cube one was at (-4.99, 149.39)
+ at : 18:56:33.295315.
+cube two was at (-134.82, 176.21)
+ at : 18:56:33.295315.
+moved backwards at : 18:56:37.058997.
+cozmo was at (-87.39, 22.63) at : 18:56:39.720455.
+cube one was at (-4.99, 149.39)
+ at : 18:56:39.720455.
+cube two was at (-134.82, 176.21)
+ at : 18:56:39.720455.
+moved backwards at : 18:56:43.242184.
+Checking for success at : 18:56:43.242184.
+Success at : 18:56:52.937125.
+Changed to state: success at : 18:56:52.937125.
+PLayer won at : 18:56:53.039218.
+Changed to state: game_over at : 18:56:57.175535.

@@ -1,0 +1,44 @@
+Changed to state: set_up at : 19:55:44.373769.
+didn't find a face looking elsewhere! at : 19:55:48.232769.
+didn't find a face looking elsewhere! at : 19:55:50.778142.
+('Cozmo found a face at: %s', '<Pose <Position x: 311.85 y: 254.14 z: 501.45> <Quaternion q0: 0.85 q1: 0.31 q2: -0.15 q3: -0.40 (angle_z: <Angle -0.88 radians (-50.18 degrees)>)> origin_id=13>') at : 19:55:52.342723.
+Setting up game board at : 19:55:55.869949.
+Light cubes turn on at : 19:55:57.185138.
+cozmo was at (55.89, -45.85) at : 19:56:05.846624.
+Changed to state: listening_for_commands at : 19:56:09.488040.
+Saw card 0 at : 19:56:13.987829.
+Changed to state: executing at : 19:56:20.048927.
+Saw card 8 at : 19:56:20.048927.
+cozmo was at (50.77, 10.78) at : 19:56:28.213955.
+cube one was at (-42.9, 183.96)
+ at : 19:56:28.213955.
+cube two was at (-111.38, 184.33)
+ at : 19:56:28.213955.
+moved forward at : 19:56:31.888349.
+Checking for success at : 19:56:31.888349.
+Failed at : 19:56:37.491607.
+Changed to state: failed at : 19:56:37.491607.
+Changed to state: listening_for_commands at : 19:56:58.810895.
+Saw card 3 at : 19:57:10.738372.
+Saw card 3 at : 19:57:11.289381.
+Changed to state: executing at : 19:57:15.370616.
+Saw card 8 at : 19:57:15.370616.
+Changed to state: executing at : 19:57:16.686546.
+Saw card 8 at : 19:57:16.686546.
+cozmo was at (12.36, 51.02) at : 19:57:24.549673.
+cube one was at (-42.89, 183.98)
+ at : 19:57:24.549673.
+cube two was at (-111.38, 184.33)
+ at : 19:57:24.549673.
+moved backwards at : 19:57:28.275660.
+cozmo was at (53.9, 16.24) at : 19:57:30.727934.
+cube one was at (-42.07, 183.79)
+ at : 19:57:30.727934.
+cube two was at (-111.38, 184.33)
+ at : 19:57:30.727934.
+moved backwards at : 19:57:34.419818.
+Checking for success at : 19:57:34.419818.
+Success at : 19:57:43.162334.
+Changed to state: success at : 19:57:43.162334.
+PLayer won at : 19:57:43.273435.
+Changed to state: game_over at : 19:57:47.173825.
