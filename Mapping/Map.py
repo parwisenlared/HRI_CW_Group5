@@ -11,22 +11,24 @@ import asyncio
 import threading
 
 """
--------------YO YO YO, MAKE SURE IN THE FSM make_game_ready is only called ONCE-----------------------------------------
-create definition to find initial poses and start map
+The code contains three classes. 
+The cozmo methods class contains all of the required methods to make cozmo run. It enables cozmo to read, store and 
+execute actions. The FSM contains the finite state machine and its 6 possible states. The CommandCardAcknowledge was
+added to enable Cozmo's backpacks lights to flash.
 
 """
 
+# global variable to signal when the game ends
 game_running = True
 # variables for setting up the tkinter map
 size_of_map = 1000
-anchor_for_canvas = size_of_map/2
+anchor_for_canvas = size_of_map / 2
 # create a tkinter base window and canvas we can draw our map on.
 root = tk.Tk()
-look_at = 0
-abc = 0
+canvas = tk.Canvas(root, width=size_of_map, height=size_of_map)
+canvas.pack()
 # create blank map
 game_map = Image.new('RGB', (size_of_map, size_of_map), color=(0, 0, 0))
-
 # get images for map and resize to approximately the right size
 cube_image = Image.open("cube.jpg")
 cube_image.thumbnail((50, 50))
@@ -34,7 +36,6 @@ cozmo_image = Image.open("cozmo.jpg")
 cozmo_image.thumbnail((50, 50))
 player_image = Image.open("player.png")
 player_image.thumbnail((50, 50))
-
 # define poses for cozmo and two cubes
 cube_one_initial_pose = []
 cube_two_initial_pose = []
@@ -42,23 +43,20 @@ cozmo_initial_pose = []
 cozmo_pose = []
 cube_one_pose = []
 cube_two_pose = []
-
 # create an empty log where we will write to during the program
 log = []
-
 # the array holding the commands the player has given
 commands = []
-
-# define the max time
+# define the max time (in seconds)
 max_time = 250
-
 # variable holding the player's face_ID and pose
 player_face_id = []
 player_face_pose = []
-
 # variable to track current state of game should be Building Map, Receiving Instructions, Resetting Map, Lost, Won
 game_state = ['set_up']
 image_number = 0
+# Ensures FSM only looks at the player once in listening state
+look_at = 0
 
 
 class CozmoMethods(threading.Thread):
@@ -98,49 +96,57 @@ class CozmoMethods(threading.Thread):
             object_number = int(obj_substring)
             if object_number == 0:
                 self.add_command_to_array(0)
-                self.write_to_log("Saw card 0")
-                print("card: 0 seen")
+                self.write_to_log("Saw forward card")
+                print("card: forward seen")
             elif object_number == 1:
                 self.add_command_to_array(1)
-                self.write_to_log("Saw card 1")
-                print("card: 1 seen")
+                self.write_to_log("Saw turn left card")
+                print("card: turn left seen")
             elif object_number == 2:
                 self.add_command_to_array(2)
-                self.write_to_log("Saw card 2")
-                print("card: 2 seen")
+                self.write_to_log("Saw turn right card")
+                print("card: turn right seen")
             elif object_number == 3:
                 self.add_command_to_array(3)
-                self.write_to_log("Saw card 3")
-                print("card: 3 seen")
+                self.write_to_log("Saw reverse card")
+                print("card: reverse seen")
             elif object_number == 4:
                 self.add_command_to_array(4)
-                self.write_to_log("Saw card 4")
-                print("card: 4 seen")
+                self.write_to_log("Saw pick up card")
+                print("card: pick up seen")
             elif object_number == 5:
                 self.add_command_to_array(5)
-                self.write_to_log("Saw card 5")
-                print("card: 5 seen")
+                self.write_to_log("Saw put down card")
+                print("card: put down seen")
             elif object_number == 6:
                 self.add_command_to_array(6)
-                self.write_to_log("Saw card 6")
-                print("card: 6 seen")
+                self.write_to_log("Saw undo card")
+                print("card: undo seen")
             elif object_number == 7:
                 self.add_command_to_array(7)
-                self.write_to_log("Saw card 7")
-                print("card: 7 seen")
+                self.write_to_log("Saw reset card")
+                print("card: reset seen")
             elif object_number == 8:
                 self.add_command_to_array(8)
-                self.write_to_log("Saw card 8")
-                print("card: 8 seen")
+                self.write_to_log("Saw execution card")
+                print("card: execution seen")
+            elif object_number == 9:
+                self.add_command_to_array(9)
+                self.write_to_log("Saw turn left 45 card")
+                print("card turn left 45 seen")
+            elif object_number == 10:
+                self.add_command_to_array(10)
+                self.write_to_log("Saw turn right 45 card")
+                print("card turn right 45 seen")
 
     # This creates each of the custom objects using the factory objects.
     def make_command_cards(self, robot):
-        forward_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType00, CustomObjectMarkers.Diamonds2, 44, 10,
-                                                      10, True)
-        turn_left = robot.world.define_custom_cube(CustomObjectTypes.CustomType01, CustomObjectMarkers.Triangles4, 44, 10,
-                                                   10, True)
-        turn_right = robot.world.define_custom_cube(CustomObjectTypes.CustomType02, CustomObjectMarkers.Hexagons5, 44, 10,
-                                                    10, True)
+        forward_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType00, CustomObjectMarkers.Diamonds2, 44,
+                                                      10, 10, True)
+        turn_left = robot.world.define_custom_cube(CustomObjectTypes.CustomType01, CustomObjectMarkers.Triangles4, 44,
+                                                   10, 10, True)
+        turn_right = robot.world.define_custom_cube(CustomObjectTypes.CustomType02, CustomObjectMarkers.Hexagons5, 44,
+                                                    10, 10, True)
         reverse = robot.world.define_custom_cube(CustomObjectTypes.CustomType03, CustomObjectMarkers.Hexagons2, 44, 10,
                                                  10, True)
         pick_up = robot.world.define_custom_cube(CustomObjectTypes.CustomType04, CustomObjectMarkers.Diamonds3, 44, 10,
@@ -151,20 +157,24 @@ class CozmoMethods(threading.Thread):
                                               10, True)
         reset = robot.world.define_custom_cube(CustomObjectTypes.CustomType07, CustomObjectMarkers.Circles4, 44, 10,
                                                10, True)
-        execution_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType08, CustomObjectMarkers.Triangles3, 44,
-                                                        10, 10, True)
-        return forward_card, turn_right, turn_left, reverse, pick_up, put_down, undo, reset, execution_card
+        execution_card = robot.world.define_custom_cube(CustomObjectTypes.CustomType08, CustomObjectMarkers.Triangles3,
+                                                        44, 10, 10, True)
+        turn_left_45 = robot.world.define_custom_cube(CustomObjectTypes.CustomType09, CustomObjectMarkers.Circles5, 44,
+                                                      10, 10, True)
+        turn_right_45 = robot.world.define_custom_cube(CustomObjectTypes.CustomType10, CustomObjectMarkers.Triangles2,
+                                                       44, 10, 10, True)
+        return forward_card, turn_right, turn_left, reverse, pick_up, put_down, undo, reset, execution_card, \
+               turn_left_45, turn_right_45
 
-    # Adds commands to command array in the form of numbers which are then read out by carry_out_commands below. Some of the
-    # commands are implemented here, such as reset and undo.
+    # Adds commands to command array in the form of numbers which are then read out by carry_out_commands below.
+    # Some of the commands are implemented here, such as reset and undo.
     def add_command_to_array(self, command_card):
         if command_card == 8:
             self.change_state("executing")
         elif command_card == 7:
             if len(commands) > 0:
-                for _ in commands:
+                for x in range(0, len(commands)):
                     commands.pop()
-                commands.pop()
         elif command_card == 6:
             if len(commands) > 0:
                 commands.pop()
@@ -180,6 +190,10 @@ class CozmoMethods(threading.Thread):
             commands.append(5)
         elif command_card == 5:
             commands.append(6)
+        elif command_card == 9:
+            commands.append(7)
+        elif command_card == 10:
+            commands.append(8)
 
     # reads each command value from the commands list and executes the correct action
     def carry_out_commands(self, robot):
@@ -190,10 +204,10 @@ class CozmoMethods(threading.Thread):
                 self.drive_forward(robot)
             elif val == 2:
                 self.turn(90, robot)
-                self.write_to_log("Turned left")
+                self.write_to_log("Turned left 90")
             elif val == 3:
                 self.turn(-90, robot)
-                self.write_to_log("Turned right")
+                self.write_to_log("Turned right 90")
             elif val == 4:
                 self.drive_backwards(robot)
             elif val == 5:
@@ -204,14 +218,36 @@ class CozmoMethods(threading.Thread):
             elif val == 6:
                 self.put_down_cube(robot)
                 self.write_to_log("Put cube down")
+            elif val == 7:
+                self.turn(45, robot)
+                self.write_to_log("Turned left 45")
+            elif val == 8:
+                self.turn(-45, robot)
+                self.write_to_log("Turned right 45")
+
         for x in range(0, len(commands)):
             commands.pop()
         self.check_for_success()
 
     def check_for_success(self):
         self.write_to_log("Checking for success")
-        condition = input("Did they succeed? Y?N")
-        if condition == "Y":
+        cube1x = 0
+        cube1y = 0
+        cube2x = 0
+        cube2y = 0
+        for val in cube_one_pose:
+            cube1x = val[0]
+            cube1y = val[1]
+        for val in cube_two_pose:
+            cube2x = val[0]
+            cube2y = val[1]
+        print(str(cube1x))
+        print(str(cube2x))
+        print(str(cube1y))
+        print(str(cube2y))
+        # the +/- 15 mm tolerance is to account for the cubes not being perfectly stacked on top of one and other.
+        # Any more than 15mm and the top cube will fall off
+        if (abs(cube2x)-15) <= abs(cube1x) <= (abs(cube2x)+15) and (abs(cube2y)-15) <= abs(cube1y) <= (abs(cube2y)+15):
             self.write_to_log("Success")
             self.change_state("success")
         else:
@@ -287,14 +323,13 @@ class CozmoMethods(threading.Thread):
             for y in range(0, size_of_map):
                 game_map.putpixel((x, y), (255, 255, 255))
         for val in cube_one_pose:
-            game_map.paste(cube_image, (500+int(val[0]), (500+int(val[1]))))
-            print(str(val[0]) + ',' + str(val[1]))
+            game_map.paste(cube_image, (500 + int(val[0]), (500 + int(val[1]))))
         for val in cube_two_pose:
-            game_map.paste(cube_image, (500+int(val[0]), (500+int(val[1]))))
+            game_map.paste(cube_image, (500 + int(val[0]), (500 + int(val[1]))))
         for val in cozmo_pose:
-            game_map.paste(cozmo_image, (500+int(val[0]), (500+int(val[1]))))
+            game_map.paste(cozmo_image, (500 + int(val[0]), (500 + int(val[1]))))
         for val in player_face_pose:
-            game_map.paste(player_image, (500+int(val[0]), (500+int(val[1]))))
+            game_map.paste(player_image, (500 + int(val[0]), (500 + int(val[1]))))
         update_canvas(game_map)
 
     # Take in a string as given by str(.pose.position) and then determine x, y coordinates for map making.
@@ -396,8 +431,8 @@ class CozmoMethods(threading.Thread):
         robot.add_event_handler(cozmo.objects.EvtObjectAppeared, self.object_event_listeners)
         self.make_command_cards(robot)
         cube1, cube2 = self.colour_light_cubes(robot)
-        #robot.say_text("I'm looking for the player").wait_for_completed()
-        #player_faces = self.find_player(robot)
+        # robot.say_text("I'm looking for the player").wait_for_completed()
+        # player_faces = self.find_player(robot)
         cozmo_current_pose = str(robot.pose.position)
         cozmo_xy = self.get_xy_coordinates(cozmo_current_pose)
         cozmo_pose.append(cozmo_xy)
@@ -419,18 +454,65 @@ class CozmoMethods(threading.Thread):
 
     # checks if cubes/cozmo are out of position and repositions them correctly
     def reset_game_board(self, robot):
-        global abc
-        abc = 0
+        global look_at
+        look_at = 0
         robot.move_lift(-5)
         print("Resetting")
-        """
+        # check if cubes are out of position (there's some leeway in the if statement here to account for cozmo slipping
+        # on the table surface and thinking they've moved a few mm when they haven't. If they're pretty much in the same
+        # position then cozmo leaves them be.
+        cube = robot.world.get_light_cube(LightCube1Id)
+        x_initial = 0
+        y_initial = 0
+        x_current = 0
+        y_current = 0
+        for val in cube_one_initial_pose:
+            x_initial = val[0]
+            y_initial = val[1]
+        for val in cube_one_pose:
+            x_current = val[0]
+            y_current = val[1]
+        # create a square search space 20 mm by 20 mm (for cozmo readout error)
+        x_current_small = x_current - 20
+        x_current_big = x_current + 20
+        y_current_small = y_current - 20
+        y_current_big = y_current + 20
+        if x_current_small <= x_initial <= x_current_big and y_current_small <= y_initial <= y_current_big:
+            robot.stop_all_motors()
+            current_action = robot.pickup_object(cube, num_retries=3, in_parallel=True)
+            current_action.wait_for_completed()
+            robot.go_to_pose(Pose(x_initial, y_initial, 0, angle_z=degrees(0))).wait_for_completed()
+            self.put_down_cube(robot)
+
+        cube = robot.world.get_light_cube(LightCube2Id)
+        x_initial = 0
+        y_initial = 0
+        x_current = 0
+        y_current = 0
+        for val in cube_two_initial_pose:
+            x_initial = val[0]
+            y_initial = val[1]
+        for val in cube_two_pose:
+            x_current = val[0]
+            y_current = val[1]
+        # create a square search space 10 mm by 10 mm (for cozmo readout error)
+        x_current_small = x_current - 10
+        x_current_big = x_current + 10
+        y_current_small = y_current - 10
+        y_current_big = y_current + 10
+        if x_current_small <= x_initial <= x_current_big and y_current_small <= y_initial <= y_current_big:
+            robot.stop_all_motors()
+            current_action = robot.pickup_object(cube, num_retries=3, in_parallel=True)
+            current_action.wait_for_completed()
+            robot.go_to_pose(Pose(x_initial, y_initial, 0, angle_z=degrees(0))).wait_for_completed()
+            self.put_down_cube(robot)
+
         x = 0
         y = 0
         for val in cozmo_initial_pose:
             x = val[0]
             y = val[1]
         robot.go_to_pose(Pose(x, y, 0, angle_z=degrees(0))).wait_for_completed()
-        """
         self.change_state("listening_for_commands")
 
     # how to change states
@@ -453,7 +535,7 @@ class CozmoMethods(threading.Thread):
             return
 
 
-class FSMThread(CozmoMethods, threading.Thread):
+class FSM(CozmoMethods, threading.Thread):
     def __init__(self, robot):
         threading.Thread.__init__(self)
         CozmoMethods.__init__(self, robot)
@@ -463,14 +545,12 @@ class FSMThread(CozmoMethods, threading.Thread):
     def run(self):
         robot = self.robot
         global game_running
+        global look_at
         set_up = 0
         tries = 0
         current_time = 0
         player_face = self.find_player(robot)
         while game_running:
-            while game_state[0] == "waiting":
-                print("hello")
-                time.sleep(0.1)
             while game_state[0] == "set_up":
                 # ensure the make_game_ready method is only called at the beginning of the game.
                 if set_up == 0:
@@ -478,23 +558,25 @@ class FSMThread(CozmoMethods, threading.Thread):
                     robot.say_text("I'm just setting up!").wait_for_completed()
                     self.make_game_ready(robot)
             while game_state[0] == "listening_for_commands":
-                global abc
-                if abc == 0:
+                if look_at == 0:
                     self.look_at_player(robot, player_face)
                     robot.say_text("ok, show me the cards").wait_for_completed()
-                    abc = abc + 1
-                #robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
+                    look_at = look_at + 1
+                print("Now listening")
+                # robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
                 #               "disappears from my view so if you want to show me one twice you need to hide it and then "
                 #               "show it again").wait_for_completed()N
                 if current_time <= max_time:
                     time.sleep(0.1)
                     current_time = current_time + 1
                 else:
-                    abc = 0
+                    look_at = 0
                     current_time = 0
                     self.change_state("executing")
                     time.sleep(0.1)
             while game_state[0] == "executing":
+                look_at = 0
+                current_time = 0
                 robot.say_text("Ok, I'm getting started").wait_for_completed()
                 robot.set_head_angle(degrees(0)).wait_for_completed()
                 self.carry_out_commands(robot)
@@ -507,8 +589,7 @@ class FSMThread(CozmoMethods, threading.Thread):
                 if tries == 3:
                     self.lost(robot)
                 else:
-                    robot.say_text("I'm just going to get back in position, can you put the cubes back in the right "
-                                   "place please?").wait_for_completed()
+                    robot.say_text("I'm just going to get everything back in position").wait_for_completed()
                     self.reset_game_board(robot)
             while game_state[0] == "success":
                 self.victory(robot)
@@ -542,7 +623,7 @@ class CommandCardAcknowledge(threading.Thread):
 # this method creates and starts running each of the threads and waits for them to finish before exiting
 def cozmo_program(robot: cozmo.robot.Robot):
     c_thread = CozmoMethods(robot)
-    fsm_thread = FSMThread(robot)
+    fsm_thread = FSM(robot)
     ack_thread = CommandCardAcknowledge(robot)
     ack_thread.start()
     fsm_thread.start()
@@ -554,8 +635,6 @@ def cozmo_program(robot: cozmo.robot.Robot):
 
 
 def update_canvas(this_map):
-    canvas = tk.Canvas(root, width=size_of_map, height=size_of_map)
-    canvas.pack()
     global image_number
     this_maps = ImageTk.PhotoImage(this_map)
     canvas.create_image(anchor_for_canvas, anchor_for_canvas, image=this_maps)
