@@ -20,6 +20,9 @@ added to enable Cozmo's backpacks lights to flash.
 
 # global variable to signal when the game ends
 game_running = True
+# variables for cozmo's voice pitch and speed of speech.
+voice_pitch = -1.0
+duration_scalar = 0.5
 # variables for setting up the tkinter map
 size_of_map = 1000
 anchor_for_canvas = size_of_map / 2
@@ -257,13 +260,15 @@ class CozmoMethods(threading.Thread):
     def lost(self, robot):
         self.write_to_log("Player lost entirely")
         print("You lost")
-        robot.say_text("you lost! goodbye").wait_for_completed()
+        robot.say_text("you lost! goodbye", voice_pitch=voice_pitch, duration_scalar=duration_scalar)\
+            .wait_for_completed()
         self.change_state("game_over")
 
     def victory(self, robot):
         self.write_to_log("PLayer won")
         print("You won")
-        robot.say_text("you won! goodbye").wait_for_completed()
+        robot.say_text("you won! goodbye", voice_pitch=voice_pitch, duration_scalar=duration_scalar,
+                       play_excited_animation=True).wait_for_completed()
         self.change_state("game_over")
 
     # method to be called when card reading move forward is shown
@@ -386,7 +391,8 @@ class CozmoMethods(threading.Thread):
     # this initial method looks for the game player. Cozmo will look for a face and assume the one it sees is the player
     def find_player(self, robot):
         print("finding players")
-        # robot.say_text("If you are not playing please cover your face while I look for the player.").wait_for_completed()
+        robot.say_text("I'm looking for the player, please look at me.", voice_pitch=voice_pitch,
+                       duration_scalar=duration_scalar).wait_for_completed()
         robot.move_lift(-3)
         robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
         player_face = None
@@ -402,7 +408,6 @@ class CozmoMethods(threading.Thread):
                     for _ in player_face_pose:
                         player_face_pose.pop()
                 player_face_pose.append(xy_position)
-                # this places the xy coordinate of the player in the list, currently the player's position is not updated.
                 event = "Cozmo found a face at: %s", position
                 self.write_to_log(event)
                 return player_face
@@ -431,8 +436,6 @@ class CozmoMethods(threading.Thread):
         robot.add_event_handler(cozmo.objects.EvtObjectAppeared, self.object_event_listeners)
         self.make_command_cards(robot)
         cube1, cube2 = self.colour_light_cubes(robot)
-        # robot.say_text("I'm looking for the player").wait_for_completed()
-        # player_faces = self.find_player(robot)
         cozmo_current_pose = str(robot.pose.position)
         cozmo_xy = self.get_xy_coordinates(cozmo_current_pose)
         cozmo_pose.append(cozmo_xy)
@@ -555,17 +558,27 @@ class FSM(CozmoMethods, threading.Thread):
                 # ensure the make_game_ready method is only called at the beginning of the game.
                 if set_up == 0:
                     set_up = set_up + 1
-                    robot.say_text("I'm just setting up!").wait_for_completed()
+                    robot.say_text(
+                        "I'm going to set up and build my world map. While I do that - you have a quick look over the "
+                        "command cards. Your goal is to use them to give me instructions that will have me pick up one "
+                        "cube and stack it on top of the other.", voice_pitch=voice_pitch,
+                        duration_scalar=duration_scalar).wait_for_completed()
+                    robot.say_text(
+                        "I'll tell you when I'm ready to be shown the cards. You'll have two minutes to show me the "
+                        "card sequence. If you're ready before that, show me the execute card and I'll get started. "
+                        "You'll know when I see a card because my backpack light will flash. ", voice_pitch=voice_pitch,
+                        duration_scalar=duration_scalar).wait_for_completed()
+                    robot.say_text(
+                        "You have 3 tries. good luck", voice_pitch=voice_pitch, duration_scalar=duration_scalar)\
+                        .wait_for_completed()
+
                     self.make_game_ready(robot)
             while game_state[0] == "listening_for_commands":
                 if look_at == 0:
                     self.look_at_player(robot, player_face)
-                    robot.say_text("ok, show me the cards").wait_for_completed()
+                    robot.say_text("ok, show me the cards", voice_pitch=voice_pitch, duration_scalar=duration_scalar)\
+                        .wait_for_completed()
                     look_at = look_at + 1
-                print("Now listening")
-                # robot.say_text("Show me the command cards in the order you think is right! I'll only count it once until it"
-                #               "disappears from my view so if you want to show me one twice you need to hide it and then "
-                #               "show it again").wait_for_completed()N
                 if current_time <= max_time:
                     time.sleep(0.1)
                     current_time = current_time + 1
@@ -577,19 +590,23 @@ class FSM(CozmoMethods, threading.Thread):
             while game_state[0] == "executing":
                 look_at = 0
                 current_time = 0
-                robot.say_text("Ok, I'm getting started").wait_for_completed()
+                robot.say_text("Ok, I'm getting started", voice_pitch=voice_pitch, duration_scalar=duration_scalar)\
+                    .wait_for_completed()
                 robot.set_head_angle(degrees(0)).wait_for_completed()
                 self.carry_out_commands(robot)
                 time.sleep(0.1)
             while game_state[0] == "failed":
-                robot.say_text("That didn't work!").wait_for_completed()
+                robot.say_text("That didn't work!", voice_pitch=voice_pitch, duration_scalar=duration_scalar)\
+                    .wait_for_completed()
                 tries = tries + 1
                 left = 3 - tries
-                robot.say_text("You have " + str(left) + " tries left").wait_for_completed()
+                robot.say_text("You have " + str(left) + " tries left", voice_pitch=voice_pitch,
+                               duration_scalar=duration_scalar).wait_for_completed()
                 if tries == 3:
                     self.lost(robot)
                 else:
-                    robot.say_text("I'm just going to get everything back in position").wait_for_completed()
+                    robot.say_text("I'm just going to get everything back in position", voice_pitch=voice_pitch,
+                                   duration_scalar=duration_scalar).wait_for_completed()
                     self.reset_game_board(robot)
             while game_state[0] == "success":
                 self.victory(robot)
