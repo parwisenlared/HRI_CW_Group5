@@ -1,0 +1,267 @@
+Changed to state: set_up at : 17:10:54.935270.
+didn't find a face looking elsewhere! at : 17:11:03.076269.
+didn't find a face looking elsewhere! at : 17:11:05.356866.
+didn't find a face looking elsewhere! at : 17:11:07.677579.
+didn't find a face looking elsewhere! at : 17:11:10.032655.
+didn't find a face looking elsewhere! at : 17:11:12.192328.
+didn't find a face looking elsewhere! at : 17:11:14.531638.
+didn't find a face looking elsewhere! at : 17:11:16.934158.
+('Cozmo found a face at: %s', '<Pose <Position x: -754.31 y: 1244.21 z: 1215.29> <Quaternion q0: 0.86 q1: 0.32 q2: 0.14 q3: 0.36 (angle_z: <Angle 0.79 radians (45.34 degrees)>)> origin_id=3>') at : 17:11:19.114817.
+Setting up game board at : 17:12:00.032361.
+Light cubes turn on at : 17:12:00.812882.
+cozmo was at (-0.12, 0.72) at : 17:12:23.625989.
+Changed to state: listening_for_commands at : 17:12:27.481847.
+Saw forward card at : 17:12:45.655226.
+Saw turn left 45 card at : 17:12:57.509967.
+Saw pick up card at : 17:13:00.521262.
+Saw turn right card at : 17:13:05.167588.
+Saw turn right card at : 17:13:06.821131.
+Saw turn right card at : 17:13:07.948499.
+Saw forward card at : 17:13:10.639928.
+Saw forward card at : 17:13:11.868038.
+Saw forward card at : 17:13:13.176915.
+Saw put down card at : 17:13:16.452075.
+Changed to state: executing at : 17:13:19.567176.
+Saw execution card at : 17:13:19.567176.
+cozmo was at (17.99, -32.37) at : 17:13:26.722704.
+cube one was at (23.33, -254.98)
+ at : 17:13:26.722704.
+cube two was at (177.09, -143.88)
+ at : 17:13:26.722704.
+moved forward at : 17:13:31.991469.
+cozmo was at (35.07, -81.33) at : 17:13:33.205203.
+cube one was at (23.18, -255.05)
+ at : 17:13:33.205203.
+cube two was at (177.09, -143.88)
+ at : 17:13:33.205203.
+Turned left 45 at : 17:13:37.075053.
+Attempted cube pick up at : 17:13:51.168239.
+cozmo was at (45.29, -70.12) at : 17:13:52.931155.
+cube one was at (23.14, -255.08)
+ at : 17:13:52.931155.
+cube two was at (177.09, -143.88)
+ at : 17:13:52.931155.
+Turned right 90 at : 17:13:56.626465.
+cozmo was at (224.98, -68.96) at : 17:13:57.883063.
+cube one was at (23.14, -255.08)
+ at : 17:13:57.883063.
+cube two was at (178.79, -143.07)
+ at : 17:13:57.883063.
+Turned right 90 at : 17:14:01.594782.
+cozmo was at (225.24, -68.21) at : 17:14:03.326427.
+cube one was at (23.14, -255.08)
+ at : 17:14:03.326427.
+cube two was at (178.79, -143.07)
+ at : 17:14:03.326427.
+Turned right 90 at : 17:14:07.125060.
+cozmo was at (224.22, -67.33) at : 17:14:09.615527.
+cube one was at (23.14, -255.08)
+ at : 17:14:09.615527.
+cube two was at (178.79, -143.07)
+ at : 17:14:09.615527.
+moved forward at : 17:14:13.387465.
+cozmo was at (269.2, -92.61) at : 17:14:15.724033.
+cube one was at (23.14, -255.08)
+ at : 17:14:15.724033.
+cube two was at (178.79, -143.07)
+ at : 17:14:15.724033.
+moved forward at : 17:14:19.549211.
+cozmo was at (313.83, -117.83) at : 17:14:22.095643.
+cube one was at (23.14, -255.08)
+ at : 17:14:22.095643.
+cube two was at (178.79, -143.07)
+ at : 17:14:22.095643.
+moved forward at : 17:14:26.173822.
+cozmo was at (358.6, -143.46) at : 17:14:27.627928.
+cube one was at (23.14, -255.08)
+ at : 17:14:27.627928.
+cube two was at (178.79, -143.07)
+ at : 17:14:27.627928.
+moved backwards at : 17:14:31.311690.
+cozmo was at (314.73, -118.65) at : 17:14:31.311690.
+cube one was at (23.14, -255.08)
+ at : 17:14:31.311690.
+cube two was at (375.48, -152.74)
+ at : 17:14:31.311690.
+Put cube down at : 17:14:35.125250.
+Checking for success at : 17:14:35.125250.
+Failed at : 17:14:35.125250.
+Changed to state: failed at : 17:14:35.125250.
+Changed to state: listening_for_commands at : 17:14:55.471534.
+Saw turn right 45 card at : 17:15:23.387023.
+Saw forward card at : 17:15:26.317509.
+Saw forward card at : 17:15:27.507442.
+Saw forward card at : 17:15:28.657073.
+Saw forward card at : 17:15:29.729899.
+Saw pick up card at : 17:15:34.718626.
+Saw turn right card at : 17:15:40.408945.
+Saw turn right card at : 17:15:41.148158.
+Saw forward card at : 17:15:46.043316.
+Saw forward card at : 17:15:49.165911.
+Saw forward card at : 17:15:50.448409.
+Saw put down card at : 17:15:54.746042.
+Changed to state: executing at : 17:15:58.223568.
+Saw execution card at : 17:15:58.223568.
+cozmo was at (313.6, -118.15) at : 17:16:04.132106.
+cube one was at (23.14, -255.08)
+ at : 17:16:04.132106.
+cube two was at (373.46, -151.64)
+ at : 17:16:04.132106.
+Turned right 45 at : 17:16:08.018359.
+cozmo was at (-7.78, -15.24) at : 17:16:10.700712.
+cube one was at (23.14, -255.08)
+ at : 17:16:10.700712.
+cube two was at (373.51, -151.57)
+ at : 17:16:10.700712.
+moved forward at : 17:16:14.508468.
+cozmo was at (27.94, -52.2) at : 17:16:17.064962.
+cube one was at (23.14, -255.08)
+ at : 17:16:17.064962.
+cube two was at (342.66, -181.28)
+ at : 17:16:17.064962.
+moved forward at : 17:16:20.743701.
+cozmo was at (63.65, -89.59) at : 17:16:23.141231.
+cube one was at (23.14, -255.08)
+ at : 17:16:23.141231.
+cube two was at (344.9, -180.98)
+ at : 17:16:23.141231.
+moved forward at : 17:16:26.837955.
+cozmo was at (98.7, -127.19) at : 17:16:29.169526.
+cube one was at (23.14, -255.08)
+ at : 17:16:29.169526.
+cube two was at (344.9, -180.98)
+ at : 17:16:29.169526.
+moved forward at : 17:16:32.932210.
+didn't find a cube game failed! at : 17:16:37.967119.
+Changed to state: failed at : 17:16:37.967119.
+Attempted cube pick up at : 17:16:37.967119.
+cozmo was at (133.63, -165.24) at : 17:16:39.233341.
+cube one was at (23.14, -255.08)
+ at : 17:16:39.233341.
+cube two was at (344.9, -180.98)
+ at : 17:16:39.233341.
+Turned right 90 at : 17:16:43.033003.
+cozmo was at (105.91, -164.45) at : 17:16:44.470328.
+cube one was at (23.14, -255.08)
+ at : 17:16:44.470328.
+cube two was at (344.9, -180.98)
+ at : 17:16:44.470328.
+Turned right 90 at : 17:16:48.124920.
+cozmo was at (105.96, -135.64) at : 17:16:50.538433.
+cube one was at (-17.49, -248.1)
+ at : 17:16:50.538433.
+cube two was at (344.9, -180.98)
+ at : 17:16:50.538433.
+moved forward at : 17:16:54.256880.
+cozmo was at (71.02, -97.94) at : 17:16:56.690854.
+cube one was at (-17.49, -248.1)
+ at : 17:16:56.690854.
+cube two was at (344.9, -180.98)
+ at : 17:16:56.690854.
+moved forward at : 17:17:00.383585.
+cozmo was at (36.49, -60.12) at : 17:17:02.842410.
+cube one was at (-17.49, -248.1)
+ at : 17:17:02.842410.
+cube two was at (344.9, -180.98)
+ at : 17:17:02.842410.
+moved forward at : 17:17:06.546135.
+cozmo was at (2.02, -21.92) at : 17:17:09.039605.
+cube one was at (-17.49, -248.1)
+ at : 17:17:09.039605.
+cube two was at (344.9, -180.98)
+ at : 17:17:09.039605.
+moved backwards at : 17:17:12.924762.
+cozmo was at (36.78, -60.29) at : 17:17:12.924762.
+cube one was at (-17.49, -248.1)
+ at : 17:17:12.924762.
+cube two was at (344.9, -180.98)
+ at : 17:17:12.924762.
+Put cube down at : 17:17:16.932814.
+Checking for success at : 17:17:16.932814.
+Failed at : 17:17:16.933815.
+Changed to state: failed at : 17:17:16.933815.
+Changed to state: listening_for_commands at : 17:17:36.147628.
+Saw forward card at : 17:17:47.613466.
+Saw forward card at : 17:17:48.948459.
+Saw forward card at : 17:17:51.031862.
+Saw turn right card at : 17:18:01.050083.
+Saw pick up card at : 17:18:06.368503.
+Saw pick up card at : 17:18:06.783701.
+Saw turn right card at : 17:18:17.386398.
+Saw forward card at : 17:18:21.007771.
+Saw forward card at : 17:18:22.339115.
+Saw forward card at : 17:18:23.608476.
+Saw put down card at : 17:18:28.234340.
+Changed to state: executing at : 17:18:31.690036.
+Saw execution card at : 17:18:31.690036.
+cozmo was at (36.78, -60.29) at : 17:18:38.675083.
+cube one was at (-17.49, -248.1)
+ at : 17:18:38.675083.
+cube two was at (344.9, -180.98)
+ at : 17:18:38.675083.
+moved forward at : 17:18:42.456169.
+cozmo was at (53.19, 4.88) at : 17:18:44.847858.
+cube one was at (-17.49, -248.1)
+ at : 17:18:44.847858.
+cube two was at (344.9, -180.98)
+ at : 17:18:44.847858.
+moved forward at : 17:18:48.625533.
+cozmo was at (105.22, 4.57) at : 17:18:50.976303.
+cube one was at (-17.49, -248.1)
+ at : 17:18:50.976303.
+cube two was at (344.9, -180.98)
+ at : 17:18:50.976303.
+moved forward at : 17:18:54.770739.
+cozmo was at (156.93, 4.09) at : 17:18:56.220850.
+cube one was at (-17.49, -248.1)
+ at : 17:18:56.220850.
+cube two was at (344.9, -180.98)
+ at : 17:18:56.220850.
+Turned right 90 at : 17:19:00.006522.
+didn't find a cube game failed! at : 17:19:05.029437.
+Changed to state: failed at : 17:19:05.029437.
+Attempted cube pick up at : 17:19:05.029437.
+didn't find a cube game failed! at : 17:19:10.051910.
+Changed to state: failed at : 17:19:10.051910.
+Attempted cube pick up at : 17:19:10.051910.
+cozmo was at (137.44, -15.99) at : 17:19:11.248175.
+cube one was at (-17.49, -248.1)
+ at : 17:19:11.248175.
+cube two was at (344.9, -180.98)
+ at : 17:19:11.248175.
+Turned right 90 at : 17:19:14.966404.
+cozmo was at (117.11, 3.65) at : 17:19:17.570806.
+cube one was at (-17.49, -248.1)
+ at : 17:19:17.570806.
+cube two was at (344.9, -180.98)
+ at : 17:19:17.570806.
+moved forward at : 17:19:21.386392.
+cozmo was at (65.78, 4.28) at : 17:19:23.664218.
+cube one was at (-17.49, -248.1)
+ at : 17:19:23.664218.
+cube two was at (344.9, -180.98)
+ at : 17:19:23.664218.
+moved forward at : 17:19:27.431903.
+cozmo was at (14.65, 5.02) at : 17:19:29.648541.
+cube one was at (-17.49, -248.1)
+ at : 17:19:29.648541.
+cube two was at (344.9, -180.98)
+ at : 17:19:29.648541.
+moved forward at : 17:19:33.521162.
+cozmo was at (-36.93, 6.17) at : 17:19:36.131560.
+cube one was at (-17.49, -248.1)
+ at : 17:19:36.131560.
+cube two was at (344.9, -180.98)
+ at : 17:19:36.131560.
+moved backwards at : 17:19:39.810295.
+cozmo was at (14.89, 5.13) at : 17:19:39.810295.
+cube one was at (-17.49, -248.1)
+ at : 17:19:39.810295.
+cube two was at (344.9, -180.98)
+ at : 17:19:39.810295.
+Put cube down at : 17:19:43.847882.
+Checking for success at : 17:19:43.847882.
+Failed at : 17:19:43.847882.
+Changed to state: failed at : 17:19:43.847882.
+Player lost entirely at : 17:19:49.921186.
+Changed to state: game_over at : 17:19:53.009286.
